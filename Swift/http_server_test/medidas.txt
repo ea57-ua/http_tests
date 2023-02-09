@@ -1,0 +1,12 @@
+Medidas de la implementación del servidor http en Swift. 
+
+El tiempo se va medir con "time curl http://localhost:8080".
+La memoria se va medir con el comando "top". Calculando la diferencia
+de antes y despúes hacer la solicitud. 
+
+                    Tiempo de respuesta         Memoria consumida (KB)
+Solicitud 1         r:010s u:004s s:005s            ~500
+Solicitud 2         r:013s u:008s s:004s            ~600
+Solicitud 3         r:012s u:008s s:000s            ~1000
+Solicitud 4         r:009s u:008s s:000s            ~
+
