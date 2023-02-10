@@ -7,7 +7,7 @@ class Handler:ChannelInboundHandler {
     //typealias OutboundOut = HTTPServerResponsePart
     typealias InboundIn = ByteBuffer
     typealias OutboundOut = ByteBuffer
-
+    /*
     private func httpResponseHead(request: HTTPRequestHead, status: HTTPResponseStatus, headers: HTTPHeaders = HTTPHeaders()) -> HTTPResponseHead {
         var head = HTTPResponseHead(version: request.version, status: status, headers: headers)
         let connectionHeaders: [String] = head.headers[canonicalForm: "connection"].map { $0.lowercased() }
@@ -28,16 +28,18 @@ class Handler:ChannelInboundHandler {
         }
         return head
     }
-    
+    */
     func channelRead(context: ChannelHandlerContext, data: NIOAny) {
         print("I'am the handler")
+        var response = HTTPResponseHead(version: HTTPVersion(major: 1, minor: 1), status: .ok)
+        response.headers.replaceOrAdd(name: "Content-Type", value: "text/html")
         let buff = self.unwrapInboundIn(data)
         let str = buff.getString(at: 0, length: buff.readableBytes) ?? "DEFAULT MESSAGE"
         let sourceAddress = context.channel.remoteAddress!
         let sourceIP = sourceAddress.ipAddress
         print("Received string: \(str.trimmingCharacters(in: .whitespacesAndNewlines)) from \(sourceIP ?? "UNKNOWN")")
         var outBuff = context.channel.allocator.buffer(capacity: 100)
-        outBuff.writeString("OLA\n")
+        outBuff.writeString("<html><body><h2><Strong> Hello from http server (JS) </h2></body></html>\n")
         context.writeAndFlush(self.wrapOutboundOut(outBuff),promise: nil)
         /*var buffer = self.unwrapInboundIn(data)
         //var req:HTTPServerRequestPart 

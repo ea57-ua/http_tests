@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug http_server_test (Swift/http_server_test)",
+            "program": "${workspaceFolder:http_tests}/Swift/http_server_test/.build/debug/http_server_test",
+            "args": [],
+            "cwd": "${workspaceFolder:http_tests}/Swift/http_server_test",
+            "preLaunchTask": "swift: Build Debug http_server_test (Swift/http_server_test)"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release http_server_test (Swift/http_server_test)",
+            "program": "${workspaceFolder:http_tests}/Swift/http_server_test/.build/release/http_server_test",
+            "args": [],
+            "cwd": "${workspaceFolder:http_tests}/Swift/http_server_test",
+            "preLaunchTask": "swift: Build Release http_server_test (Swift/http_server_test)"
+        }
+    ]
+}
