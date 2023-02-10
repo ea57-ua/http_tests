@@ -1,0 +1,12 @@
+Medidas de la implementación del servidor http en PHP. 
+
+El tiempo se va medir con "time curl http://localhost:8080".
+La memoria se va medir con el comando "top". Calculando la diferencia
+de antes y despúes hacer la solicitud. 
+
+                    Tiempo de respuesta         Memoria consumida (KB)
+Solicitud 1         r:008s u:007s s:000s            ~2500 
+Solicitud 2         r:007s u:000s s:006s            ~2400
+Solicitud 3         r:008s u:004s s:004s            ~2500
+Solicitud 4         r:007s u:000s s:007s            ~
+
