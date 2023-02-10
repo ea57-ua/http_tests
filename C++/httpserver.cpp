@@ -4,17 +4,18 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <fstream>
+#include <sstream>
+using namespace std;
 
 #define PORT 8080
+
 int main(int argc, char const *argv[])
 {
     int server_fd, new_socket; long valread;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
     
-    //char *hello = "Hello from server";
-    char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-    // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
         perror("In socket");
@@ -50,7 +51,18 @@ int main(int argc, char const *argv[])
         char buffer[30000] = {0};
         valread = read( new_socket , buffer, 30000);
         printf("%s\n",buffer );
-        write(new_socket , hello , strlen(hello));
+        string response = "HTTP/1.1 200 OK\r\n";
+        response += "Content-Type: text/html\r\n";
+        response += "\r\n";
+        response += "<html>\n";
+        response += "  <head>\n";
+        response += "    <title>Hello World from C++ http server !</title>\n";
+        response += "  </head>\n";
+        response += "  <body>\n";
+        response += "    <h1>Hello World!</h1>\n";
+        response += "  </body>\n";
+        response += "</html>\n";
+        send(new_socket, response.c_str(), response.size(), 0);
         printf("------------------Hello message sent-------------------\n");
         close(new_socket);
     }
