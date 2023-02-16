@@ -3,34 +3,40 @@ import Foundation
 import NIOHTTP1
 
 class Handler:ChannelInboundHandler {
-    //typealias InboundIn = HTTPServerRequestPart
-    //typealias OutboundOut = HTTPServerResponsePart
-    typealias InboundIn = ByteBuffer
-    typealias OutboundOut = ByteBuffer
-    /*
-    private func httpResponseHead(request: HTTPRequestHead, status: HTTPResponseStatus, headers: HTTPHeaders = HTTPHeaders()) -> HTTPResponseHead {
-        var head = HTTPResponseHead(version: request.version, status: status, headers: headers)
-        let connectionHeaders: [String] = head.headers[canonicalForm: "connection"].map { $0.lowercased() }
-
-        if !connectionHeaders.contains("keep-alive") && !connectionHeaders.contains("close") {
-            // the user hasn't pre-set either 'keep-alive' or 'close', so we might need to add headers
-            switch (request.isKeepAlive, request.version.major, request.version.minor) {
-            case (true, 1, 0):
-                // HTTP/1.0 and the request has 'Connection: keep-alive', we should mirror that
-                head.headers.add(name: "Connection", value: "keep-alive")
-            case (false, 1, let n) where n >= 1:
-                // HTTP/1.1 (or treated as such) and the request has 'Connection: close', we should mirror that
-                head.headers.add(name: "Connection", value: "close")
-            default:
-                // we should match the default or are dealing with some HTTP that we don't support, let's leave as is
-                ()
-            }
-        }
-        return head
-    }
-    */
+    typealias InboundIn = HTTPServerRequestPart
+    typealias OutboundOut = HTTPServerResponsePart
+    //typealias InboundIn = ByteBuffer
+    //typealias OutboundOut = ByteBuffer
+    
     func channelRead(context: ChannelHandlerContext, data: NIOAny) {
         print("I'am the handler")
+        let requestPart = self.unwrapInboundIn(data)
+        switch requestPart {
+            case .head(let headers):
+                print("Received headers: \(headers)")
+                let html = """
+                <html>
+                <head>
+                    <title>NIO</title>
+                </head>
+                <body>
+                    <h1>Hola, esto es un servidor http simple hecho con swiftNIO</h1>
+                </body>
+                </html>
+                """
+                let responseHeaders = HTTPHeaders([("content-type", "text/html")])
+                let responseData = context.channel.allocator.buffer(string: html)
+                let responseHead = HTTPResponseHead(version: .init(major: 1, minor: 1), status: .ok, headers: responseHeaders)
+                let responsePartHead = HTTPServerResponsePart.head(responseHead)
+                context.write(self.wrapOutboundOut(responsePartHead), promise: nil)
+                let responsePartBody = HTTPServerResponsePart.body(.byteBuffer(responseData))
+                context.write(self.wrapOutboundOut(responsePartBody), promise: nil)
+                let responsePartEnd = HTTPServerResponsePart.end(nil)
+                context.writeAndFlush(self.wrapOutboundOut(responsePartEnd), promise: nil)
+            default:
+                print("Ignoring part: \(requestPart)")
+    }
+        /*
         var response = HTTPResponseHead(version: HTTPVersion(major: 1, minor: 1), status: .ok)
         response.headers.replaceOrAdd(name: "Content-Type", value: "text/html")
         let buff = self.unwrapInboundIn(data)
@@ -41,6 +47,7 @@ class Handler:ChannelInboundHandler {
         var outBuff = context.channel.allocator.buffer(capacity: 100)
         outBuff.writeString("<html><body><h2><Strong> Hello from http server (JS) </h2></body></html>\n")
         context.writeAndFlush(self.wrapOutboundOut(outBuff),promise: nil)
+        */
         /*var buffer = self.unwrapInboundIn(data)
         //var req:HTTPServerRequestPart 
         var req:HTTPRequestHead = HTTPRequestHead(version: HTTPVersion(major: 1, minor: 1), method: .GET, uri: "/")

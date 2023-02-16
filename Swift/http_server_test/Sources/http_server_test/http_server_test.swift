@@ -13,14 +13,14 @@ class http_server_test{
         server = ServerBootstrap(group: group)
             .serverChannelOption(ChannelOptions.backlog, value: 256)
             .serverChannelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
-            /*.childChannelInitializer { channel in
+            .childChannelInitializer { channel in
                 channel.pipeline.configureHTTPServerPipeline().flatMap {
                     channel.pipeline.addHandlers([Handler()])
                 }
-            } */
-            .childChannelInitializer{ channel in 
+            } 
+            /*.childChannelInitializer{ channel in 
                 channel.pipeline.addHandler(Handler())
-            }
+            }*/
             .childChannelOption(ChannelOptions.socketOption(.so_reuseaddr), value: 1)
             .childChannelOption(ChannelOptions.maxMessagesPerRead, value: 16)
             .childChannelOption(ChannelOptions.recvAllocator, value: AdaptiveRecvByteBufferAllocator())
