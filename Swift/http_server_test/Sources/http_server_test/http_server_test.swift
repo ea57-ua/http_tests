@@ -26,8 +26,8 @@ class http_server_test{
             } 
             .childChannelOption(ChannelOptions.socketOption(.so_reuseaddr), value: 1)
             .childChannelOption(ChannelOptions.maxMessagesPerRead, value: 16)
-            //.childChannelOption(ChannelOptions.recvAllocator, value: AdaptiveRecvByteBufferAllocator())
-                        /*.childChannelInitializer{ channel in 
+            /*.childChannelOption(ChannelOptions.recvAllocator, value: AdaptiveRecvByteBufferAllocator())
+                        .childChannelInitializer{ channel in 
                 channel.pipeline.addHandler(Handler())
             }*/
     }
@@ -53,10 +53,3 @@ class http_server_test{
 
     }
 } 
-
-
-
-
-
-
-

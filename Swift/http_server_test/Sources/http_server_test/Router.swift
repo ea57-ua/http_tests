@@ -10,6 +10,13 @@ class Router:Handler{
 
     init(_ lifecycle:ServiceLifecycle,_ req:Handler.InboundIn) {
         lifecycle.register(componentlifecycle)
+        lifecycle.start { error in
+            if let error = error {
+                print("failed starting  ☠️: \(error)")
+            } else {
+                print("started successfully 🚀")
+            }   
+        } 
         request = req
     }
 

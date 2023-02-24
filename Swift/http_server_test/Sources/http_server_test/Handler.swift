@@ -25,7 +25,9 @@ class Handler:ChannelInboundHandler {
         print("I'am the handler")
         let requestPart = self.unwrapInboundIn(data)
         let router = Router(lifecycle, requestPart)
+        
         router.move(context: context)
+        lifecycle.wait()
     }
 
     func channelActive(context: ChannelHandlerContext) {
