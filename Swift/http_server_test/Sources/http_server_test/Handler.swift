@@ -9,8 +9,8 @@ class Handler:ChannelInboundHandler {
     typealias InboundIn = HTTPServerRequestPart
     typealias OutboundOut = HTTPServerResponsePart
     let logger = Logger(label: "Lifecycle")
-    let lifecycle = ServiceLifecycle(configuration: ServiceLifecycle.Configuration(label: "http", installBacktrace: true))
-
+    var lifecycle = ServiceLifecycle(configuration: ServiceLifecycle.Configuration(label: "http", installBacktrace: true))
+    
     /*init() {
         lifecycle.start { error in
             if let error = error {

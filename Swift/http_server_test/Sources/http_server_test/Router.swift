@@ -8,13 +8,13 @@ class Router:Handler{
     let componentlifecycle: ComponentLifecycle = ComponentLifecycle(label: "SubSystem")
     var request:Handler.InboundIn
 
-    init(_ lifecycle:ServiceLifecycle,_ req:Handler.InboundIn) {
+    init(_ lifecycle: ServiceLifecycle,_ req:Handler.InboundIn) {
         lifecycle.register(componentlifecycle)
         lifecycle.start { error in
             if let error = error {
-                print("failed starting  ☠️: \(error)")
+                print("Lifecycle failed starting  ☠️: \(error)")
             } else {
-                print("started successfully 🚀")
+                print("Lifecycle started successfully 🚀")
             }   
         } 
         request = req
