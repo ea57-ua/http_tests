@@ -4,23 +4,14 @@ import NIO
 import Foundation
 import NIOHTTP1
 
-class Router:Handler{
-    let componentlifecycle: ComponentLifecycle = ComponentLifecycle(label: "SubSystem")
-    var request:Handler.InboundIn
+class Router{
+    var request:Handler.InboundIn?
 
-    init(_ lifecycle: ServiceLifecycle,_ req:Handler.InboundIn) {
-        lifecycle.register(componentlifecycle)
-        lifecycle.start { error in
-            if let error = error {
-                print("Lifecycle failed starting  ☠️: \(error)")
-            } else {
-                print("Lifecycle started successfully 🚀")
-            }   
-        } 
-        request = req
+    func setRequest(_ request:Handler.InboundIn) {
+        self.request = request
     }
 
-    func move(context: ChannelHandlerContext) {
+    func move(context: ChannelHandlerContext) -> String {
         switch request {
             case .head(let headers):
                 print("Received headers: \(headers)")
@@ -64,17 +55,14 @@ class Router:Handler{
                     </html>
                     """
                 }
-                let responseHeaders = HTTPHeaders([("content-type", "text/html")])
-                let responseData = context.channel.allocator.buffer(string: html)
-                let responseHead = HTTPResponseHead(version: .init(major: 1, minor: 1), status: .ok, headers: responseHeaders)
-                let responsePartHead = HTTPServerResponsePart.head(responseHead)
-                context.write(self.wrapOutboundOut(responsePartHead), promise: nil)
-                let responsePartBody = HTTPServerResponsePart.body(.byteBuffer(responseData))
-                context.write(self.wrapOutboundOut(responsePartBody), promise: nil)
-                let responsePartEnd = HTTPServerResponsePart.end(nil)
-                context.writeAndFlush(self.wrapOutboundOut(responsePartEnd), promise: nil)
+                return html
             default:
-                print("Ignoring part: \(request)")
+                if let r = request {
+                    return "Ignoring part: \(r)"
+                } else {
+                    return ""
+                }
+                
         } 
     }
 }

@@ -12,24 +12,23 @@ class http_server_test{
     private let host = "127.0.0.1"
     private let port = 8080
     private var channel:Channel!
-    
+    //var lifecycle : ServiceLifecycle
+
     init() {
+        let lc: ServiceLifecycle = ServiceLifecycle(configuration: ServiceLifecycle.Configuration(label: "http", installBacktrace: true))
+    
         server = ServerBootstrap(group: group)
             .serverChannelOption(ChannelOptions.backlog, value: 256)
             .serverChannelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
 
-        server
+        server        
             .childChannelInitializer { channel in
                 channel.pipeline.configureHTTPServerPipeline().flatMap {
-                    channel.pipeline.addHandlers([Handler()])
-                }
-            } 
+                    channel.pipeline.addHandlers([Handler(lc)])
+                } 
+            }        
             .childChannelOption(ChannelOptions.socketOption(.so_reuseaddr), value: 1)
             .childChannelOption(ChannelOptions.maxMessagesPerRead, value: 16)
-            /*.childChannelOption(ChannelOptions.recvAllocator, value: AdaptiveRecvByteBufferAllocator())
-                        .childChannelInitializer{ channel in 
-                channel.pipeline.addHandler(Handler())
-            }*/
     }
 
     public func start() {
