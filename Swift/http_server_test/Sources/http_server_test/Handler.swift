@@ -9,7 +9,6 @@ class Handler:ChannelInboundHandler {
     typealias InboundIn = HTTPServerRequestPart
     typealias OutboundOut = HTTPServerResponsePart
     let logger = Logger(label: "Lifecycle")
-    //var lifecycle = ServiceLifecycle(configuration: ServiceLifecycle.Configuration(label: "http", installBacktrace: true))
     let componentlifecycle: ComponentLifecycle = ComponentLifecycle(label: "SubSystem")
     let router:Router = Router()
     var isStarted = false
@@ -24,7 +23,7 @@ class Handler:ChannelInboundHandler {
             } else {
                 print("Lifecycle started successfully 🚀")
                 self.isStarted = true
-                if self.pendingProcess == true && self.context != nil{ 
+                if self.pendingProcess == true && self.context != nil { 
                     self.move(context:self.context!) 
                 }
             }
@@ -32,7 +31,7 @@ class Handler:ChannelInboundHandler {
     }
 
     func channelRead(context: ChannelHandlerContext, data: NIOAny) {
-        print("I'am the handler")
+        print("I'am the channelRead")
         router.setRequest(self.unwrapInboundIn(data))
         self.context = context
         if isStarted {
