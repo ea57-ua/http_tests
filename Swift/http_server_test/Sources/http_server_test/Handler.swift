@@ -8,14 +8,14 @@ import Logging
 class Handler:ChannelInboundHandler {
     typealias InboundIn = HTTPServerRequestPart
     typealias OutboundOut = HTTPServerResponsePart
-    let logger = Logger(label: "Lifecycle")
+    let logger = Logger(label: "SubSystemLifecycle")
     let componentlifecycle: ComponentLifecycle = ComponentLifecycle(label: "SubSystem")
     let router:Router = Router()
     var isStarted = false
     var pendingProcess = false
     var context:ChannelHandlerContext? = nil  // esta bien ?  
 
-    init(_ lifecycle: ServiceLifecycle) {
+    init(_ lifecycle: inout ServiceLifecycle) {
         lifecycle.register(self.componentlifecycle)
         componentlifecycle.start { error in       
             if let error = error {
@@ -23,8 +23,8 @@ class Handler:ChannelInboundHandler {
             } else {
                 print("Lifecycle started successfully 🚀")
                 self.isStarted = true
-                if self.pendingProcess == true && self.context != nil { 
-                    self.move(context:self.context!) 
+                if self.router.requestExists() && self.pendingProcess == true && self.context != nil { 
+                   self.move(context:self.context!) 
                 }
             }
         }
@@ -34,8 +34,9 @@ class Handler:ChannelInboundHandler {
         print("I'am the channelRead")
         router.setRequest(self.unwrapInboundIn(data))
         self.context = context
-        if isStarted {
+        if self.router.requestExists() && isStarted {
             move(context: context)
+            self.isStarted = false
         }
         else {
             pendingProcess = true

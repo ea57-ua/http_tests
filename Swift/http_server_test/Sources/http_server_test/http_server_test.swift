@@ -12,10 +12,10 @@ class http_server_test{
     private let host = "127.0.0.1"
     private let port = 8080
     private var channel:Channel!
-    //var lifecycle : ServiceLifecycle
+    var lifecycle : ServiceLifecycle = ServiceLifecycle(configuration: ServiceLifecycle.Configuration(label: "http", installBacktrace: true))
 
     init() {
-        let lc: ServiceLifecycle = ServiceLifecycle(configuration: ServiceLifecycle.Configuration(label: "http", installBacktrace: true))
+        //var lc: ServiceLifecycle = ServiceLifecycle(configuration: ServiceLifecycle.Configuration(label: "http", installBacktrace: true))
     
         server = ServerBootstrap(group: group)
             .serverChannelOption(ChannelOptions.backlog, value: 256)
@@ -24,7 +24,7 @@ class http_server_test{
         server        
             .childChannelInitializer { channel in
                 channel.pipeline.configureHTTPServerPipeline().flatMap {
-                    channel.pipeline.addHandlers([Handler(lc)])
+                    channel.pipeline.addHandlers([Handler(&self.lifecycle)])
                 } 
             }        
             .childChannelOption(ChannelOptions.socketOption(.so_reuseaddr), value: 1)
@@ -33,6 +33,15 @@ class http_server_test{
 
     public func start() {
         print("Starting HTTP server...")
+        /*
+        self.lifecycle.start { error in       
+            if let error = error {
+                print("Server Lifecycle failed starting  ☠️: \(error)")
+            } else {
+                print("Server Lifecycle started successfully 🚀")
+            }
+        }
+        */
         do {
             channel = try server.bind(host: host, port: port).wait() 
             print("Server started and listening on \(channel.localAddress!)")

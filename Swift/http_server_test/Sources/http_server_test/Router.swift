@@ -11,6 +11,10 @@ class Router{
         self.request = request
     }
 
+    func requestExists() -> Bool {
+        return self.request != nil
+    }
+
     func move(context: ChannelHandlerContext) -> String {
         switch request {
             case .head(let headers):
